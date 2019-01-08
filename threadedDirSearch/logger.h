@@ -48,6 +48,7 @@ public:
 	void log_level(const std::string &level);
 };
 
+//log function that accepts multi byte strings, using a mutex for threadsafe operation
 inline void logger::log(const std::string &level, const std::string &message) {
 	console.lock();
 	log_level(level);
@@ -57,6 +58,7 @@ inline void logger::log(const std::string &level, const std::string &message) {
 	SetConsoleTextAttribute(hConsole, 7);
 }
 
+//overwrite for the log function aboce that accepts single byte strings, using a mutex for threadsafe operation
 inline void logger::log(const std::string &level, const std::wstring &message) {
 	console.lock();
 	log_level(level);
@@ -66,6 +68,7 @@ inline void logger::log(const std::string &level, const std::wstring &message) {
 	SetConsoleTextAttribute(hConsole, 7);
 }
 
+//function that sets the log color according to a string level input
 inline void logger::log_level(const std::string &level) {
 	if (level == "notice") {
 		color = 8;
