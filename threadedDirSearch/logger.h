@@ -19,7 +19,7 @@
 #define LOG_ERROR(msg) console_log.log("error", msg)
 #define LOG_SUCCESS(msg) console_log.log("success", msg)
 #define LOG_IMPT_NOTICE(msg) console_log.log("important_notice", msg)
-#define LOG_SPAM(msg) console_log.log("notice", msg)
+#define LOG_SPAM(msg)
 #define LOG(msg)
 
 #else

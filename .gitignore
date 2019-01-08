@@ -14,3 +14,4 @@
 *.iobj
 *.ipdb
 x64/Debug/threadedDirSearch.exe
+*.opendb
