@@ -3,8 +3,6 @@
 *.db
 .vs/threadedDirSearch/v15/.suo
 *.user
-threadedDirSearch/threadedDirSearch.vcxproj
-threadedDirSearch/threadedDirSearch.vcxproj.filters
 *.obj
 *.tlog
 *.log
@@ -16,4 +14,3 @@ threadedDirSearch/threadedDirSearch.vcxproj.filters
 *.iobj
 *.ipdb
 x64/Debug/threadedDirSearch.exe
-threadedDirSearch.sln
