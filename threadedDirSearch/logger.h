@@ -44,7 +44,7 @@ SUCH DAMAGE.
 //by changing and undefining (empty define) these following blocks you may change what type of log will be printed to console, defining a preprocessor definition is required
 #ifdef TDS_RELEASE
 
-#define LOG_NOTICE(msg) console_log.log(logger::notice, msg)
+#define LOG_NOTICE(msg)
 #define LOG_WARNING(msg) console_log.log(logger::warning, msg)
 #define LOG_ERROR(msg) console_log.log(logger::error, msg)
 #define LOG_SUCCESS(msg) console_log.log(logger::success, msg)
