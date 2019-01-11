@@ -42,17 +42,7 @@ SUCH DAMAGE.
 #define INITIATE_LOGGER logger console_log
 
 //by changing and undefining (empty define) these following blocks you may change what type of log will be printed to console, defining a preprocessor definition is required
-#ifdef TDS_RELEASE
-
-#define LOG_NOTICE(msg)
-#define LOG_WARNING(msg) console_log.log(logger::warning, msg)
-#define LOG_ERROR(msg) console_log.log(logger::error, msg)
-#define LOG_SUCCESS(msg) console_log.log(logger::success, msg)
-#define LOG_IMPT_NOTICE(msg) console_log.log(logger::important_notice, msg)
-#define LOG_SPAM(msg)
-#define LOG(msg)
-
-#else
+#ifdef TDS_DEBUG
 
 #define LOG_NOTICE(msg) console_log.log(logger::notice, msg)
 #define LOG_WARNING(msg) console_log.log(logger::warning, msg)
@@ -61,6 +51,16 @@ SUCH DAMAGE.
 #define LOG_IMPT_NOTICE(msg) console_log.log(logger::important_notice, msg)
 #define LOG_SPAM(msg) console_log.log(logger::spam, msg)
 #define LOG(msg) console_log.log(logger::undefined, msg)
+
+#else
+
+#define LOG_NOTICE(msg)
+#define LOG_WARNING(msg) console_log.log(logger::warning, msg)
+#define LOG_ERROR(msg) console_log.log(logger::error, msg)
+#define LOG_SUCCESS(msg) console_log.log(logger::success, msg)
+#define LOG_IMPT_NOTICE(msg) console_log.log(logger::important_notice, msg)
+#define LOG_SPAM(msg)
+#define LOG(msg)
 
 #endif
 

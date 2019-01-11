@@ -41,50 +41,54 @@ INITIATE_LOGGER;
 
 #endif
 
-//synchronizers
-CRITICAL_SECTION m_files_sync;
-CRITICAL_SECTION m_dirs_sync;
 
 class search_request {
 private:
 	//prealocate, add 1000 files as a buffer
 	const int m_prealloc = 250000;
-	//queues and vectors to hold pub_files and directories
-	std::queue <std::wstring> m_dirs;
 	//maxthreads is the CPU core count of the executing system
-	int m_mthreads = std::thread::hardware_concurrency();
+	const int m_mthreads = std::thread::hardware_concurrency();
+
+	//queues and vectors to hold m_files and directories
+	std::queue <std::wstring> m_dirs;
 	//deffinition of handler function input
 	typedef void(*output_function)(std::vector <std::wstring> &output);
-
-public:
-	//enum for speedmode
-	enum speed_mode {
-		ultra = 0, high = 1, normal = 2, low = 3
-	};
-	speed_mode pub_speed_mode;
-	//enum for application mode
-	enum application_mode {
-		index = 0, file_search = 1
-	};
-	application_mode pub_mode;
-
-	//user defined variables
-	std::wstring pub_search_filename;
-	std::wstring pub_dir_to_search;
-	output_function pub_output_handler;
+	//timepointers for runtime meassurement
+	std::chrono::high_resolution_clock::time_point m_runtime_start;
 
 	//results of search
-	std::vector <std::wstring> pub_files;
-	std::vector <std::wstring> pub_found_files;
-	size_t filecount = 0;
+	std::vector <std::wstring> m_files;
+	std::vector <std::wstring> m_found_files;
 
 	void search_worker();
 	void output(std::vector <std::wstring> &output) const;
 	static bool file_exists(const std::wstring &file_name);
-	void initiate_search();
 
-	//timepointers for runtime meassurement
-	std::chrono::high_resolution_clock::time_point pub_runtime_start;
+public:
+	//synchronizers
+	CRITICAL_SECTION pub_files_sync;
+	CRITICAL_SECTION pub_dirs_sync;
+
+	//enum for application mode
+	enum application_mode {
+		index = 0, file_search = 1
+	};
+	//enum for speedmode
+	enum speed_mode {
+		ultra = 0, high = 1, normal = 2, low = 3
+	};
+
+	//user defined variables
+	speed_mode pub_speed_mode;
+	application_mode pub_mode;
+	output_function pub_output_handler;
+	std::wstring pub_search_filename;
+	std::wstring pub_dir_to_search;
+
+	//results of search
+	size_t filecount = 0;
+
+	void initiate_search();
 
 	//function to set all required variables for a search in one operation
 	void set_variables(const speed_mode speed_mode_input, const application_mode mode_input, const std::wstring dir_to_search_input, void(*output_function_input)(std::vector <std::wstring> &output), const std::wstring search_filename_input) {
@@ -96,15 +100,15 @@ public:
 	}
 
 	~search_request() {
-		
 		//use a new timepoint with the old one to calculate runtime in ms
 		const std::chrono::high_resolution_clock::time_point runtime_end = std::chrono::high_resolution_clock::now();
-		const std::chrono::milliseconds runtime = std::chrono::duration_cast<std::chrono::milliseconds>(runtime_end - pub_runtime_start);
+		const std::chrono::milliseconds runtime = std::chrono::duration_cast<std::chrono::milliseconds>(runtime_end - m_runtime_start);
 
 		//if runtime is below 2 seconds warn the user
 		if (runtime < std::chrono::milliseconds(2000)) {
 			LOG_WARNING("EXECUTION TIME BELOW 5 SECONDS");
 		}
+
 		//log the execution time
 		std::string runtime_str = std::to_string(runtime.count());
 		runtime_str = runtime_str.substr(0, runtime_str.size() - 3) + "," + runtime_str.substr(runtime_str.size() - 3, runtime_str.size());
@@ -112,18 +116,20 @@ public:
 	}
 };
 
-//function that prepares all the stuff for the search and then launches it
+//prepares all the stuff for the search and then launches it
 inline void search_request::initiate_search() {
 
+	//create the runtime start timepoint
+	m_runtime_start = std::chrono::high_resolution_clock::now();
 	//this area requires synchronization -> initialize the critical sectors
 
-	InitializeCriticalSection(&m_files_sync);
-	InitializeCriticalSection(&m_dirs_sync);
+	InitializeCriticalSection(&pub_files_sync);
+	InitializeCriticalSection(&pub_dirs_sync);
 
 	//push the maindir to the queue and preallocate space for the vectors (-> will require less memory management down the line)
 	m_dirs.push(pub_dir_to_search);
-	pub_files.reserve(m_prealloc);
-	pub_found_files.reserve(5);
+	m_files.reserve(m_prealloc);
+	m_found_files.reserve(5);
 
 	//creation of threadpool
 	std::vector <std::thread> threadpool;
@@ -131,20 +137,22 @@ inline void search_request::initiate_search() {
 		//create a thread with the search_worker function
 		threadpool.push_back(std::thread(&search_request::search_worker, this));
 	}
+
 	//when the threads exit do a join operation on everyone
 	std::for_each(threadpool.begin(), threadpool.end(), std::mem_fn(&std::thread::join));
 
-	DeleteCriticalSection(&m_files_sync);
-	DeleteCriticalSection(&m_dirs_sync);
 	//synchronization area ends here
+	DeleteCriticalSection(&pub_files_sync);
+	DeleteCriticalSection(&pub_dirs_sync);
 
 	//after the search is done dump the rest of the result to the output function
 	if (pub_mode == index) {
-		filecount = filecount + pub_files.size();
-		output(pub_files);
-		pub_files.clear();
+		filecount = filecount + m_files.size();
+		output(m_files);
+		m_files.clear();
 	}
 }
+
 //uses a user-defined function and gives that function a vector to process
 inline void search_request::output(std::vector <std::wstring> &output) const {
 	pub_output_handler(output);
@@ -159,7 +167,7 @@ inline bool search_request::file_exists(const std::wstring &file_name) {
 	return FALSE;
 }
 
-//a thread-ready directory search worker
+//thread-ready directory search worker
 inline void search_request::search_worker() {
 	WIN32_FIND_DATA FindFileData;
 	//creating thread local handlers
@@ -172,24 +180,24 @@ inline void search_request::search_worker() {
 	//loop for ever
 	while (TRUE) {
 		//check if m_dirs queue has a member
-		EnterCriticalSection(&m_dirs_sync);
+		EnterCriticalSection(&pub_dirs_sync);
 		if (m_dirs.empty()) {
 			//when the queue is empty sleep for 50ms and then check again (another thread may have found a directory in the meantime)
-			LeaveCriticalSection(&m_dirs_sync);
+			LeaveCriticalSection(&pub_dirs_sync);
 			LOG_SPAM("IDLE THREAD");
 			std::this_thread::sleep_for(std::chrono::milliseconds(50));
-			EnterCriticalSection(&m_dirs_sync);
+			EnterCriticalSection(&pub_dirs_sync);
 			if (m_dirs.empty()) {
 				//if the queue is still empty break the loop and quit this thread
 				LOG_SPAM("THREAD DIED");
-				LeaveCriticalSection(&m_dirs_sync);
+				LeaveCriticalSection(&pub_dirs_sync);
 				break;
 			}
 		}
 		//take the first element of the queue and leave the critical section
 		std::wstring home_dir = m_dirs.front();
 		m_dirs.pop();
-		LeaveCriticalSection(&m_dirs_sync);
+		LeaveCriticalSection(&pub_dirs_sync);
 
 		//start the search if the directory string is not just empty
 		if (!home_dir.empty()) {
@@ -222,28 +230,28 @@ inline void search_request::search_worker() {
 						if (result_only.find(pub_search_filename) != std::wstring::npos) {
 							//send the result back to the user-defined output variable
 							LOG_SPAM(result_only + L" matches the search");
-							EnterCriticalSection(&m_files_sync);
-							pub_found_files.push_back(result_full);
-							output(pub_found_files);
-							pub_found_files.clear();
-							pub_found_files.reserve(1);
-							LeaveCriticalSection(&m_files_sync);
+							EnterCriticalSection(&pub_files_sync);
+							m_found_files.push_back(result_full);
+							output(m_found_files);
+							m_found_files.clear();
+							m_found_files.reserve(1);
+							LeaveCriticalSection(&pub_files_sync);
 						}
 					}
 					else {
 						//add the result to the result vector
-						EnterCriticalSection(&m_files_sync);
-						pub_files.push_back(result_full);
-						LeaveCriticalSection(&m_files_sync);
+						EnterCriticalSection(&pub_files_sync);
+						m_files.push_back(result_full);
+						LeaveCriticalSection(&pub_files_sync);
 					}
 				}
 				//if it is not a file it has to be a directory
 				else {
 					//add the directory to the queue
 					LOG_SPAM(L"directory discovered: " + result_full);
-					EnterCriticalSection(&m_dirs_sync);
+					EnterCriticalSection(&pub_dirs_sync);
 					m_dirs.push(result_full);
-					LeaveCriticalSection(&m_dirs_sync);
+					LeaveCriticalSection(&pub_dirs_sync);
 				}
 				//when using "slow" priorities wait now
 				if (pub_speed_mode == low) {
@@ -266,14 +274,14 @@ inline void search_request::search_worker() {
 			}
 		}
 		//when using indey mode check if the files in the found vector are about to fill up the preallocated space and if so return and clear them
-		EnterCriticalSection(&m_files_sync);
-		const size_t size = pub_files.size();
+		EnterCriticalSection(&pub_files_sync);
+		const size_t size = m_files.size();
 		if (size > (m_prealloc - 500) && pub_speed_mode > FALSE && pub_mode == index) {
 			filecount = filecount + size;
-			output(pub_files);
-			pub_files.clear();
-			pub_files.reserve(m_prealloc);
+			output(m_files);
+			m_files.clear();
+			m_files.reserve(m_prealloc);
 		}
-		LeaveCriticalSection(&m_files_sync);
+		LeaveCriticalSection(&pub_files_sync);
 	}
 }
