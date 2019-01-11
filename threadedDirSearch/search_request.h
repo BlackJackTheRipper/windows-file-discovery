@@ -62,7 +62,7 @@ private:
 
 	void search_worker();
 	void output(std::vector <std::wstring> &output) const;
-	static bool file_exists(const std::wstring &file_name);
+	static bool file_exists(const WIN32_FIND_DATA &FindFileData);
 
 public:
 	//synchronizers
@@ -159,9 +159,8 @@ inline void search_request::output(std::vector <std::wstring> &output) const {
 }
 
 //cheks if a file specified exists
-inline bool search_request::file_exists(const std::wstring &file_name) {
-	const DWORD dw_attrib = GetFileAttributes(file_name.c_str());
-	if (!(dw_attrib & FILE_ATTRIBUTE_DIRECTORY)) {
+inline bool search_request::file_exists(const WIN32_FIND_DATA &FindFileData) {
+	if (!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 		return TRUE;
 	}
 	return FALSE;
@@ -221,7 +220,7 @@ inline void search_request::search_worker() {
 					continue;
 				}
 				//check whether the result is a file or not
-				if (file_exists(result_full)) {
+				if (file_exists(FindFileData)) {
 					//if it is a file:
 					LOG_SPAM(result_only + L" found in: " + result_full);
 					//when searching
@@ -277,6 +276,12 @@ inline void search_request::search_worker() {
 		EnterCriticalSection(&pub_files_sync);
 		const size_t size = m_files.size();
 		if (size > (m_prealloc - 500) && pub_speed_mode > FALSE && pub_mode == index) {
+			if (size > m_prealloc) {
+				LOG_NOTICE("CLEARING VECTOR LARGER THAN PREALLOC");
+			}
+			else {
+				LOG_NOTICE("CLEARING VECTOR");
+			}
 			filecount = filecount + size;
 			output(m_files);
 			m_files.clear();
