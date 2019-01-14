@@ -40,10 +40,7 @@ SUCH DAMAGE.
 #endif
 
 #define INITIATE_LOGGER logger console_log
-
-//by changing and undefining (empty define) these following blocks you may change what type of log will be printed to console, defining a preprocessor definition is required
-#ifdef TDS_DEBUG
-
+#define log_instance console_log
 #define LOG_NOTICE(msg) console_log.log(logger::notice, msg)
 #define LOG_WARNING(msg) console_log.log(logger::warning, msg)
 #define LOG_ERROR(msg) console_log.log(logger::error, msg)
@@ -52,29 +49,21 @@ SUCH DAMAGE.
 #define LOG_SPAM(msg) console_log.log(logger::spam, msg)
 #define LOG(msg) console_log.log(logger::undefined, msg)
 
-#else
-
-#define LOG_NOTICE(msg)
-#define LOG_WARNING(msg) console_log.log(logger::warning, msg)
-#define LOG_ERROR(msg) console_log.log(logger::error, msg)
-#define LOG_SUCCESS(msg) console_log.log(logger::success, msg)
-#define LOG_IMPT_NOTICE(msg) console_log.log(logger::important_notice, msg)
-#define LOG_SPAM(msg)
-#define LOG(msg)
-
-#endif
-
 class logger {
 private:
-	const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	std::mutex console;
-	int color = 15;
-	std::string message_prefix_a;
-	std::wstring message_prefix_w;
+	const HANDLE m_hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	std::mutex m_console;
+	int m_color = 15;
+	std::string m_message_prefix_a;
+	std::wstring m_message_prefix_w;
 public:
+	enum verbose_level {
+		standard = 3, metrics = 4, detailed = 6
+	};
 	enum error_level {
 		success = 0, error = 1, important_notice = 2, warning = 3, notice = 4, spam = 5, undefined = 6
 	};
+	verbose_level pub_verbose_level = standard;
 	void log(const error_level &level, const std::string &message);
 	void log(const error_level &level, const std::wstring &message);
 	void log_level(const error_level &level);
@@ -82,59 +71,63 @@ public:
 
 //log function that accepts multi byte strings, using a mutex for threadsafe operation
 inline void logger::log(const error_level &level, const std::string &message) {
-	console.lock();
-	log_level(level);
-	SetConsoleTextAttribute(hConsole, color);
-	std::cout << message_prefix_a << message << std::endl;
-	console.unlock();
-	SetConsoleTextAttribute(hConsole, 7);
+	if (level <= pub_verbose_level) {
+		m_console.lock();
+		log_level(level);
+		SetConsoleTextAttribute(m_hConsole, m_color);
+		std::cout << m_message_prefix_a << message << std::endl;
+		m_console.unlock();
+		SetConsoleTextAttribute(m_hConsole, 7);
+	}
 }
 
 //overwrite for the log function aboce that accepts single byte strings, using a mutex for threadsafe operation
 inline void logger::log(const error_level &level, const std::wstring &message) {
-	console.lock();
-	log_level(level);
-	SetConsoleTextAttribute(hConsole, color);
-	std::wcout << message_prefix_w << message << std::endl;
-	console.unlock();
-	SetConsoleTextAttribute(hConsole, 7);
+	if (level <= pub_verbose_level) {
+		m_console.lock();
+		log_level(level);
+		SetConsoleTextAttribute(m_hConsole, m_color);
+		std::wcout << m_message_prefix_w << message << std::endl;
+		m_console.unlock();
+		SetConsoleTextAttribute(m_hConsole, 7);
+	}
 }
 
 //function that sets the log color according to a string level input
 inline void logger::log_level(const error_level &level) {
 	if (level == success) {
-		color = 10;
-		message_prefix_a = "[+] ";
-		message_prefix_w = L"[+] ";
+		m_color = 10;
+		m_message_prefix_a = "[+] ";
+		m_message_prefix_w = L"[+] ";
 	}
 	else if (level == error) {
-		color = 12;
-		message_prefix_a = "[x] ";
-		message_prefix_w = L"[x] ";
+		m_color = 12;
+		m_message_prefix_a = "[x] ";
+		m_message_prefix_w = L"[x] ";
 	}
 	else if (level == important_notice) {
-		color = 15;
-		message_prefix_a = "[-] ";
-		message_prefix_w = L"[-] ";
+		m_color = 15;
+		m_message_prefix_a = "[-] ";
+		m_message_prefix_w = L"[-] ";
 	}
 	else if (level == warning) {
-		color = 14;
-		message_prefix_a = "[!] ";
-		message_prefix_w = L"[!] ";
+		m_color = 14;
+		m_message_prefix_a = "[!] ";
+		m_message_prefix_w = L"[!] ";
 	}
 	else if (level == notice) {
-		color = 8;
-		message_prefix_a = "[-] ";
-		message_prefix_w = L"[-] ";
+		m_color = 8;
+		m_message_prefix_a = "[-] ";
+		m_message_prefix_w = L"[-] ";
 	}
 	else if (level == spam) {
-		color = 9;
-		message_prefix_a = "";
-		message_prefix_w = L"";
+		m_color = 9;
+		m_message_prefix_a = "";
+		m_message_prefix_w = L"";
 	}
 	else {
-		color = 7;
-		message_prefix_a = "";
-		message_prefix_w = L"";
+		m_color = 7;
+		m_message_prefix_a = "";
+		m_message_prefix_w = L"";
 	}
 }

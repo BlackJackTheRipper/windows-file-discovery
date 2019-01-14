@@ -43,13 +43,13 @@ INITIATE_LOGGER;
 
 
 class search_request {
-private: //private variables use the "m_" prefix
+private: //private variables and functions use the "m_" prefix
 	//synchronizers
 	CRITICAL_SECTION pub_files_sync;
 	CRITICAL_SECTION pub_dirs_sync;
 
 	//enum for result type
-	enum result_type {
+	enum m_result_type {
 		file = 0, directory = 1
 	};
 
@@ -64,8 +64,6 @@ private: //private variables use the "m_" prefix
 	//queues and vectors to hold m_files and directories
 	std::queue <std::wstring> m_dirs;
 
-	//deffinition of handler function input
-	typedef void(*output_function)(std::vector <std::wstring> &output);
 	//results of search
 	std::vector <std::wstring> m_files;
 	std::vector <std::wstring> m_found_files;
@@ -73,34 +71,37 @@ private: //private variables use the "m_" prefix
 	//timepointer for runtime meassurement
 	std::chrono::high_resolution_clock::time_point m_runtime_start;
 
-	void search_worker();
-	static bool result_type(const WIN32_FIND_DATA &FindFileData);
+	void m_search_worker();
+	static bool m_result_type(const WIN32_FIND_DATA &FindFileData);
 
 public: //public variables use the "pub_" prefix
 	//enum for application mode
-	enum application_mode {
+	enum pub_app_mode {
 		index = 0, file_search = 1
 	};
-	//enum for speedmode
-	enum speed_mode {
+	//enum for priority
+	enum pub_app_priority_mode {
 		ultra = 0, high = 1, normal = 2, low = 3
 	};
 
+	//deffinition of handler function input
+	typedef void(*output_function)(std::vector <std::wstring> &output);
+
 	//user defined variables
-	speed_mode pub_speed_mode;
-	application_mode pub_mode;
+	pub_app_priority_mode pub_app_priority;
+	pub_app_mode pub_mode;
 	output_function pub_output_handler;
 	std::wstring pub_search_filename;
 	std::wstring pub_dir_to_search;
 
 	//results of search
-	size_t filecount = 0;
+	size_t pub_filecount = 0;
 
 	void initiate_search();
 
 	//function to set all required variables for a search in one operation
-	void set_variables(const speed_mode speed_mode_input, const application_mode mode_input, const std::wstring dir_to_search_input, const output_function output_function_input, const std::wstring search_filename_input) {
-		pub_speed_mode = speed_mode_input;
+	void set_variables(const pub_app_priority_mode speed_mode_input, const pub_app_mode mode_input, const std::wstring dir_to_search_input, const output_function output_function_input, const std::wstring search_filename_input) {
+		pub_app_priority = speed_mode_input;
 		pub_mode = mode_input;
 		pub_search_filename = search_filename_input;
 		pub_dir_to_search = dir_to_search_input;
@@ -147,7 +148,7 @@ inline void search_request::initiate_search() {
 	std::vector <std::thread> threadpool;
 	for (int i = 0; i < m_mthreads; i++) {
 		//create a thread with the search_worker function
-		threadpool.push_back(std::thread(&search_request::search_worker, this));
+		threadpool.push_back(std::thread(&search_request::m_search_worker, this));
 	}
 
 	//when the threads exit do a join operation on everyone
@@ -159,7 +160,7 @@ inline void search_request::initiate_search() {
 
 	//after the search is done dump the rest of the result to the output function
 	if (pub_mode == index) {
-		filecount = filecount + m_files.size();
+		pub_filecount += m_files.size();
 		//use predefined function (outside of this class) to handle output
 		pub_output_handler(m_files);
 		m_files.clear();
@@ -167,7 +168,7 @@ inline void search_request::initiate_search() {
 }
 
 //cheks if a file specified exists
-inline bool search_request::result_type(const WIN32_FIND_DATA &FindFileData) {
+inline bool search_request::m_result_type(const WIN32_FIND_DATA &FindFileData) {
 	if (FindFileData.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY) {
 		return directory;
 	}
@@ -177,7 +178,7 @@ inline bool search_request::result_type(const WIN32_FIND_DATA &FindFileData) {
 }
 
 //thread-ready directory search worker
-inline void search_request::search_worker() {
+inline void search_request::m_search_worker() {
 	WIN32_FIND_DATA found_file;
 	HANDLE thread_local find_handle;
 	//defining variables
@@ -227,7 +228,7 @@ inline void search_request::search_worker() {
 					continue;
 				}
 				//check whether the result is a file or not
-				if (result_type(found_file) == file) {
+				if (m_result_type(found_file) == file) {
 					//if it is a file:
 					LOG_SPAM(result_only + L" found in: " + result_full);
 					//when searching
@@ -261,7 +262,7 @@ inline void search_request::search_worker() {
 					LeaveCriticalSection(&pub_dirs_sync);
 				}
 				//when using "slow" priorities wait now
-				if (pub_speed_mode == low) {
+				if (pub_app_priority == low) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
 				//repeat these steps while new files are found
@@ -269,9 +270,13 @@ inline void search_request::search_worker() {
 			FindClose(find_handle);
 
 			//when using "high" or "normal" priorities
-			if (pub_speed_mode == high || pub_speed_mode == normal) {
-				//count up everytime we get here and if we hit 5 wait
-				if (sleepcount < 5) {
+			if (pub_app_priority == high || pub_app_priority == normal) {
+				//when using high priority wait every 5th time we get here
+				if (sleepcount < 5 && pub_app_priority == high) {
+					sleepcount++;
+				}
+				//when using normal priority
+				else if (sleepcount < 2 && pub_app_priority == normal) {
 					sleepcount++;
 				}
 				else {
@@ -283,14 +288,14 @@ inline void search_request::search_worker() {
 		//when using index mode check if the files in the found vector are about to fill up the preallocated space and if so return and clear them
 		EnterCriticalSection(&pub_files_sync);
 		const size_t size = m_files.size();
-		if (size > (m_prealloc - 500) && pub_speed_mode > FALSE && pub_mode == index) {
+		if (size > (m_prealloc - 500) && pub_app_priority > FALSE && pub_mode == index) {
 			if (size > m_prealloc) {
 				LOG_NOTICE("CLEARING VECTOR LARGER THAN PREALLOC");
 			}
 			else {
 				LOG_NOTICE("CLEARING VECTOR");
 			}
-			filecount = filecount + size;
+			pub_filecount += size;
 			//use predefined function (outside of this class) to handle output
 			pub_output_handler(m_files);
 			//clear the vector and preallocate again
