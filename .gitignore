@@ -13,9 +13,6 @@
 *.lastcodeanalysissucceeded
 *.iobj
 *.ipdb
-x64/Debug/threadedDirSearch.exe
+x64/*/*.*
 *.opendb
-x64/Release MSVC DLL/output.txt
-x64/Debug/output.txt
 *.ilk
-x64/Debug/threadedDirSearch.ilk
