@@ -145,20 +145,26 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release MSVC STATIC|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\Build</OutDir>
+    <TargetName>dirsearch_32_msvcSTATIC</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release MSVC DLL|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\Build</OutDir>
+    <TargetName>dirsearch_32_msvcDLL</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release MSVC STATIC|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>dirsearch_msvcSTATIC</TargetName>
+    <TargetName>dirsearch_64_msvcSTATIC</TargetName>
+    <OutDir>$(SolutionDir)\Build</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release MSVC DLL|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>dirsearch_msvcDLL</TargetName>
+    <TargetName>dirsearch_64_msvcDLL</TargetName>
+    <OutDir>$(SolutionDir)\Build</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

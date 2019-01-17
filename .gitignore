@@ -1,7 +1,7 @@
 
 *.ipch
 *.db
-.vs/threadedDirSearch/v15/.suo
+*.suo
 *.user
 *.obj
 *.tlog
@@ -13,8 +13,6 @@
 *.lastcodeanalysissucceeded
 *.iobj
 *.ipdb
-x64/*/*.*
 *.opendb
 *.ilk
-x64/Release MSVC DLL/dirsearch_msvcDLL.exe
-x64/Release MSVC STATIC/dirsearch_msvcSTATIC.exe
+*.exe
