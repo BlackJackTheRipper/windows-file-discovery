@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2050
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29201.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "threadedDirSearch", "threadedDirSearch\threadedDirSearch.vcxproj", "{F7068C79-C069-403A-8ADA-AA897B189675}"
 EndProject
@@ -9,26 +9,14 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
-		Release MSVC DLL|x64 = Release MSVC DLL|x64
-		Release MSVC DLL|x86 = Release MSVC DLL|x86
-		Release MSVC STATIC|x64 = Release MSVC STATIC|x64
-		Release MSVC STATIC|x86 = Release MSVC STATIC|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F7068C79-C069-403A-8ADA-AA897B189675}.Debug|x64.ActiveCfg = Debug|x64
-		{F7068C79-C069-403A-8ADA-AA897B189675}.Debug|x64.Build.0 = Debug|x64
+		{F7068C79-C069-403A-8ADA-AA897B189675}.Debug|x64.ActiveCfg = Release|Win32
+		{F7068C79-C069-403A-8ADA-AA897B189675}.Debug|x64.Build.0 = Release|Win32
 		{F7068C79-C069-403A-8ADA-AA897B189675}.Debug|x86.ActiveCfg = Debug|Win32
 		{F7068C79-C069-403A-8ADA-AA897B189675}.Debug|x86.Build.0 = Debug|Win32
-		{F7068C79-C069-403A-8ADA-AA897B189675}.Release MSVC DLL|x64.ActiveCfg = Release MSVC DLL|x64
-		{F7068C79-C069-403A-8ADA-AA897B189675}.Release MSVC DLL|x64.Build.0 = Release MSVC DLL|x64
-		{F7068C79-C069-403A-8ADA-AA897B189675}.Release MSVC DLL|x86.ActiveCfg = Release MSVC DLL|Win32
-		{F7068C79-C069-403A-8ADA-AA897B189675}.Release MSVC DLL|x86.Build.0 = Release MSVC DLL|Win32
-		{F7068C79-C069-403A-8ADA-AA897B189675}.Release MSVC STATIC|x64.ActiveCfg = Release MSVC STATIC|x64
-		{F7068C79-C069-403A-8ADA-AA897B189675}.Release MSVC STATIC|x64.Build.0 = Release MSVC STATIC|x64
-		{F7068C79-C069-403A-8ADA-AA897B189675}.Release MSVC STATIC|x86.ActiveCfg = Release MSVC STATIC|Win32
-		{F7068C79-C069-403A-8ADA-AA897B189675}.Release MSVC STATIC|x86.Build.0 = Release MSVC STATIC|Win32
 		{F7068C79-C069-403A-8ADA-AA897B189675}.Release|x64.ActiveCfg = Release|x64
 		{F7068C79-C069-403A-8ADA-AA897B189675}.Release|x64.Build.0 = Release|x64
 		{F7068C79-C069-403A-8ADA-AA897B189675}.Release|x86.ActiveCfg = Release|Win32

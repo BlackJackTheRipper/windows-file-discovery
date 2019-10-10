@@ -1,5 +1,7 @@
 #pragma once
 
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
 #include <fstream>
 #include <tchar.h>
 #include <windows.h>
@@ -7,7 +9,7 @@
 #include <iostream>
 #include <codecvt>
 #include <thread>
-#include <mutex>
 #include <vector>
-#include <queue>
-#include <chrono>
+#include <atomic>
+#include <array>
+#include <thread>
