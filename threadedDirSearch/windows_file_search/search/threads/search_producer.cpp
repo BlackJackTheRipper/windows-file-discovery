@@ -1,7 +1,7 @@
-#include "pch.h"
+#include "../../required.h"
 #include "../search.h"
 
-void search::search_producer(bool exclude_windir) {
+void search::search_producer(unsigned int tandem_id, bool exclude_windir) {
 	WIN32_FIND_DATA FindFileData;
 	//creating thread local handlers
 	HANDLE thread_local find_handle;
@@ -10,17 +10,17 @@ void search::search_producer(bool exclude_windir) {
 	bool quit = false;
 
 	while (TRUE) {
-		if (dir_queue.empty()) {
+		if (store.dirs.empty()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-			if (dir_queue.empty()) {
-				dead_producers++;
+			if (store.dirs.empty()) {
+				producers.sleeping(tandem_id);
 				while (TRUE) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(250));
-					if (!dir_queue.empty()) {
-						dead_producers--;
+					if (!store.dirs.empty()) {
+						producers.wake(tandem_id);
 						break;
 					}
-					if (dead_producers >= prod_threadlimit) {
+					if (producers.alives() <= 1) {
 						quit = true;
 						break;
 					}
@@ -32,7 +32,7 @@ void search::search_producer(bool exclude_windir) {
 			break;
 		
 		//define where and what the thread is searching
-		std::wstring search = dir_queue.get_first() + sub_folder;
+		std::wstring search = store.dirs.get_first_clr() + sub_folder;
 		std::wstring search_querry = search + file_querry;
 		
 		//now use the handle to find the first file matching the parameters
@@ -49,18 +49,14 @@ void search::search_producer(bool exclude_windir) {
 			if (search == L"\\" || result_only == L"." || result_only == L".." || (exclude_windir == true && result_only == L"Windows")) {
 				continue;
 			}
-
-			//logger::get().log_threaded_weak(logger::diagnostic, "Found a file: " + widetosingle(result_only));
 			
 			//check whether the result is a file or not
 			if (is_file(FindFileData)) {
-				if (files_queue.fill_first(result_full) == false)
-					files_buffer.add(result_full);
+				store.files.push_back(result_full);
 			}
 			//if it is not a file it has to be a directory
 			else {
-				if (dir_queue.fill_first(result_full) == false)
-					dir_buffer.add(result_full);
+				store.dirs.push_back(result_full);
 			}
 			//repeat these steps while new files are found
 		} while (FindNextFile(find_handle, &FindFileData));

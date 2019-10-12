@@ -1,32 +1,18 @@
-#include "pch.h"
+#include "../../required.h"
 #include "../search.h"
-
-void search::write_to_file(std::wstring& ofilename, std::array<std::wstring, write_buffer_size>& write_buffer) {
-	filewrite.acquire_strong();
-	std::wofstream woutput_stream;
-	woutput_stream.open(ofilename, std::fstream::app);
-	if (woutput_stream.is_open()) {
-		//for every member of the write buffer: write to output stream
-		for (int i = 0; i < write_buffer_size; i++) {
-			woutput_stream << write_buffer[i] << std::endl;
-		}
-		woutput_stream.close();
-	}
-	filewrite.release();
-}
 
 void search::add_to_results(std::wstring& input) {
 	results.acquire_strong();
-	results_vec.push_back(input);
+	results_vec->push_back(input);
 	results.release();
 }
 
-void search::search_consumer(mode mode_in, std::wstring search_string) {
+void search::search_consumer(unsigned int tandem_id, mode mode_in, std::wstring search_string) {
 	bool quit = false;
 	while (TRUE) {
 		for (int i = 0; i < 11; i++) {
 			if (mode_in != list) {
-				std::wstring current = files_queue.get_first();
+				std::wstring current = store.files.get_first_clr();
 				if (current.empty())
 					break;
 				if (mode_in == find_combined) {
@@ -38,7 +24,6 @@ void search::search_consumer(mode mode_in, std::wstring search_string) {
 					std::wstring filename = filename_from_string(current);
 					if (filename.find(search_string) != std::wstring::npos) {
 						add_to_results(current);
-						logger::get().log_threaded_strong(logger::msg, "FOUND: " + widetosingle(current));
 					}
 				}
 				else if (mode_in == find_folder) {
@@ -48,29 +33,20 @@ void search::search_consumer(mode mode_in, std::wstring search_string) {
 						}
 					}
 				}
-				else return;
-			}
-			else {
-				std::array<std::wstring, write_buffer_size> write_buffer;
-				for (int i = 0; i < write_buffer_size; i++) {
-					std::wstring current = files_queue.get_first();
-					if (current.empty())
-						break;
-					write_buffer[i] = current;
-				}
+				add_to_results(current);
 			}
 		}
-		if (files_queue.empty()) {
+		if (store.files.empty()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-			if (files_queue.empty()) {
-				dead_consumers++;
+			if (store.files.empty()) {
+				consumers.sleeping(tandem_id);
 				while (TRUE) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(250));
-					if (!files_queue.empty()) {
-						dead_consumers--;
+					if (!store.files.empty()) {
+						consumers.wake(tandem_id);
 						break;
 					}
-					if (dead_consumers >= cons_threadlimit && dead_producers >= prod_threadlimit) {
+					if (consumers.alives() == 0 && producers.alives() == 0) {
 						quit = true;
 						break;
 					}

@@ -15,42 +15,39 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="search\search.cpp">
+    <ClCompile Include="windows_file_search\search\threads\search_consumer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="search\threads\search_producer.cpp">
+    <ClCompile Include="windows_file_search\search\threads\search_producer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="search\threads\search_consumer.cpp">
+    <ClCompile Include="windows_file_search\search\threadwatch\tw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="console\log_console.cpp">
+    <ClCompile Include="windows_file_search\search\tl_storage\tl_storage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="spinlock\spinlock.cpp">
+    <ClCompile Include="windows_file_search\search\search.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="search\buffer\buffer.cpp">
+    <ClCompile Include="windows_file_search\spinlock\spinlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
+    <ClInclude Include="windows_file_search\search\search.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="search\search.h">
+    <ClInclude Include="windows_file_search\spinlock\spinlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="console\log_console.h">
+    <ClInclude Include="windows_file_search\required.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="spinlock\spinlock.h">
+    <ClInclude Include="windows_file_search\include.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

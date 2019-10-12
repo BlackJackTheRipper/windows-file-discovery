@@ -11,5 +11,5 @@
 #include <thread>
 #include <vector>
 #include <atomic>
+#include <queue>
 #include <array>
-#include <thread>

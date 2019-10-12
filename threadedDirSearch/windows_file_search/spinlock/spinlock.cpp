@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "../required.h"
 #include "spinlock.h"
 
 void spinlock::acquire_strong() {
