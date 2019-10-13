@@ -36,6 +36,9 @@
     <ClCompile Include="windows_file_search\spinlock\spinlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="example\example.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="windows_file_search\search\search.h">
@@ -48,6 +51,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="windows_file_search\include.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_file_search\search\tl_storage\tl_storage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_file_search\search\threadwatch\tw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="example\example.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

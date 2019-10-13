@@ -2,9 +2,9 @@
 #include "../search.h"
 
 void search::add_to_results(std::wstring& input) {
-	results.acquire_strong();
-	results_vec->push_back(input);
-	results.release();
+	if (results_vec != nullptr) {
+		results_vec->add(input);
+	}
 }
 
 void search::search_consumer(unsigned int tandem_id, mode mode_in, std::wstring search_string) {
@@ -33,7 +33,9 @@ void search::search_consumer(unsigned int tandem_id, mode mode_in, std::wstring 
 						}
 					}
 				}
-				add_to_results(current);
+				else {
+					add_to_results(current);
+				}
 			}
 		}
 		if (store.files.empty()) {

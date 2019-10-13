@@ -1,5 +1,6 @@
 #include "../../required.h"
 #include "../search.h"
+#include "tl_storage.h"
 
 //will return the first available element of the vector
 std::wstring tl_storage::get_first() {

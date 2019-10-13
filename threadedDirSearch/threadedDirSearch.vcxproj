@@ -190,6 +190,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="example\example.cpp" />
     <ClCompile Include="windows_file_search\search\search.cpp" />
     <ClCompile Include="windows_file_search\search\threadwatch\tw.cpp" />
     <ClCompile Include="windows_file_search\search\tl_storage\tl_storage.cpp" />
@@ -199,9 +200,12 @@
     <ClCompile Include="windows_file_search\spinlock\spinlock.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="example\example.h" />
     <ClInclude Include="windows_file_search\include.h" />
     <ClInclude Include="windows_file_search\required.h" />
     <ClInclude Include="windows_file_search\search\search.h" />
+    <ClInclude Include="windows_file_search\search\threadwatch\tw.h" />
+    <ClInclude Include="windows_file_search\search\tl_storage\tl_storage.h" />
     <ClInclude Include="windows_file_search\spinlock\spinlock.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
