@@ -12,7 +12,7 @@ void search::search_consumer(unsigned int tandem_id, mode mode_in, std::wstring 
 	while (TRUE) {
 		for (int i = 0; i < 11; i++) {
 			if (mode_in != list) {
-				std::wstring current = store.files.get_first_clr();
+				std::wstring current = files.get_first();
 				if (current.empty())
 					break;
 				if (mode_in == find_combined) {
@@ -38,13 +38,13 @@ void search::search_consumer(unsigned int tandem_id, mode mode_in, std::wstring 
 				}
 			}
 		}
-		if (store.files.empty()) {
+		if (files.empty()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-			if (store.files.empty()) {
+			if (files.empty()) {
 				consumers.sleeping(tandem_id);
 				while (TRUE) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(250));
-					if (!store.files.empty()) {
+					if (!files.empty()) {
 						consumers.wake(tandem_id);
 						break;
 					}

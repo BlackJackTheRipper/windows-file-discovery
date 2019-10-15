@@ -39,6 +39,9 @@
     <ClCompile Include="example\example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="windows_file_search\search\returnvec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="windows_file_search\search\search.h">

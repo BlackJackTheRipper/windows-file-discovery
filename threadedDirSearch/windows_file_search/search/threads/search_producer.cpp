@@ -10,13 +10,13 @@ void search::search_producer(unsigned int tandem_id, bool exclude_windir) {
 	bool quit = false;
 
 	while (TRUE) {
-		if (store.dirs.empty()) {
+		if (dirs.empty()) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-			if (store.dirs.empty()) {
+			if (dirs.empty()) {
 				producers.sleeping(tandem_id);
 				while (TRUE) {
 					std::this_thread::sleep_for(std::chrono::milliseconds(250));
-					if (!store.dirs.empty()) {
+					if (!dirs.empty()) {
 						producers.wake(tandem_id);
 						break;
 					}
@@ -32,7 +32,7 @@ void search::search_producer(unsigned int tandem_id, bool exclude_windir) {
 			break;
 		
 		//define where and what the thread is searching
-		std::wstring search = store.dirs.get_first_clr() + sub_folder;
+		std::wstring search = dirs.get_first() + sub_folder;
 		std::wstring search_querry = search + file_querry;
 		
 		//now use the handle to find the first file matching the parameters
@@ -52,11 +52,11 @@ void search::search_producer(unsigned int tandem_id, bool exclude_windir) {
 			
 			//check whether the result is a file or not
 			if (is_file(FindFileData)) {
-				store.files.push_back(result_full);
+				files.push_back(result_full);
 			}
 			//if it is not a file it has to be a directory
 			else {
-				store.dirs.push_back(result_full);
+				dirs.push_back(result_full);
 			}
 			//repeat these steps while new files are found
 		} while (FindNextFile(find_handle, &FindFileData));

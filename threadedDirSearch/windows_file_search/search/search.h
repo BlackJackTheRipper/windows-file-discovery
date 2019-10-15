@@ -20,12 +20,8 @@ public:
 
 class search {
 private:
-	struct xconnect {
-		tl_storage files;
-		tl_storage dirs;
-	};
-	
-	xconnect store;
+	tl_storage files;
+	tl_storage dirs;
 	
 	bool is_file(const WIN32_FIND_DATA& FindFileData);
 	returnvec* results_vec = nullptr;
