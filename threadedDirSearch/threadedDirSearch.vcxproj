@@ -32,6 +32,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>threadedDirSearch</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>windows_file_search</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -151,7 +152,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeaderOutputFile />
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
@@ -171,7 +172,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
@@ -195,7 +196,7 @@
       </PrecompiledHeaderOutputFile>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
@@ -225,7 +226,7 @@
       </PrecompiledHeaderOutputFile>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
@@ -257,7 +258,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -286,7 +287,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -297,23 +298,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="example\example.cpp" />
-    <ClCompile Include="windows_file_search\search\returnvec.cpp" />
     <ClCompile Include="windows_file_search\search\search.cpp" />
+    <ClCompile Include="windows_file_search\search\slist\slist.cpp" />
+    <ClCompile Include="windows_file_search\search\spinlock\spinlock.cpp" />
     <ClCompile Include="windows_file_search\search\threadwatch\tw.cpp" />
-    <ClCompile Include="windows_file_search\search\tl_storage\tl_storage.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="windows_file_search\search\threads\search_consumer.cpp" />
     <ClCompile Include="windows_file_search\search\threads\search_producer.cpp" />
-    <ClCompile Include="windows_file_search\spinlock\spinlock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="example\example.h" />
     <ClInclude Include="windows_file_search\include.h" />
     <ClInclude Include="windows_file_search\required.h" />
     <ClInclude Include="windows_file_search\search\search.h" />
+    <ClInclude Include="windows_file_search\search\slist\slist.h" />
+    <ClInclude Include="windows_file_search\search\spinlock\spinlock.h" />
     <ClInclude Include="windows_file_search\search\threadwatch\tw.h" />
-    <ClInclude Include="windows_file_search\search\tl_storage\tl_storage.h" />
-    <ClInclude Include="windows_file_search\spinlock\spinlock.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

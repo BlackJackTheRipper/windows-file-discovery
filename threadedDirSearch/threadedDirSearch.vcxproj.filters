@@ -27,27 +27,21 @@
     <ClCompile Include="windows_file_search\search\threadwatch\tw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="windows_file_search\search\tl_storage\tl_storage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="windows_file_search\search\search.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="windows_file_search\spinlock\spinlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="example\example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="windows_file_search\search\returnvec.cpp">
+    <ClCompile Include="windows_file_search\search\slist\slist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windows_file_search\search\spinlock\spinlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="windows_file_search\search\search.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="windows_file_search\spinlock\spinlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="windows_file_search\required.h">
@@ -56,13 +50,16 @@
     <ClInclude Include="windows_file_search\include.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="windows_file_search\search\tl_storage\tl_storage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="windows_file_search\search\threadwatch\tw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="example\example.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_file_search\search\slist\slist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="windows_file_search\search\spinlock\spinlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

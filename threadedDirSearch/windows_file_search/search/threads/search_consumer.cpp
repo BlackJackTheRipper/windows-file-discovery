@@ -3,39 +3,38 @@
 
 void search::add_to_results(std::wstring& input) {
 	if (results_vec != nullptr) {
-		results_vec->add(input);
+		results_vec->push(input);
 	}
 }
 
 void search::search_consumer(unsigned int tandem_id, mode mode_in, std::wstring search_string) {
 	bool quit = false;
+	std::wstring current;
 	while (TRUE) {
 		for (int i = 0; i < 11; i++) {
-			if (mode_in != list) {
-				std::wstring current = files.get_first();
-				if (current.empty())
-					break;
-				if (mode_in == find_combined) {
-					if (current.find(search_string) != std::wstring::npos) {
-						add_to_results(current);
-					}
-				}
-				else if (mode_in == find_file) {
-					std::wstring filename = filename_from_string(current);
-					if (filename.find(search_string) != std::wstring::npos) {
-						add_to_results(current);
-					}
-				}
-				else if (mode_in == find_folder) {
-					for (std::wstring folder : folders_from_string(current)) {
-						if (folder.find(search_string) != std::wstring::npos) {
-							add_to_results(current);
-						}
-					}
-				}
-				else {
+			current = files.pop();
+			if (current.empty())
+				break;
+			if (mode_in == find_combined) {
+				if (current.find(search_string) != std::wstring::npos) {
 					add_to_results(current);
 				}
+			}
+			else if (mode_in == find_file) {
+				std::wstring filename = filename_from_string(current);
+				if (filename.find(search_string) != std::wstring::npos) {
+					add_to_results(current);
+				}
+			}
+			else if (mode_in == find_folder) {
+				for (std::wstring folder : folders_from_string(current)) {
+					if (folder.find(search_string) != std::wstring::npos) {
+						add_to_results(current);
+					}
+				}
+			}
+			else {
+				add_to_results(current);
 			}
 		}
 		if (files.empty()) {
@@ -48,7 +47,9 @@ void search::search_consumer(unsigned int tandem_id, mode mode_in, std::wstring 
 						consumers.wake(tandem_id);
 						break;
 					}
-					if (consumers.alives() == 0 && producers.alives() == 0) {
+					const auto cons = consumers.alives();
+					const auto prods = producers.alives();
+					if (prods == 0 && cons == 0) {
 						quit = true;
 						break;
 					}

@@ -22,19 +22,19 @@ bool search::is_file(const WIN32_FIND_DATA& FindFileData) {
 	return FALSE;
 }
 
-void search::start_search(mode mode_in, std::wstring& dir_input, returnvec& results, std::wstring search_string, bool exclude_windir) {
+void search::start_search(mode mode_in, std::wstring& dir_input, slist<std::wstring>& results, std::wstring search_string, bool exclude_windir) {
 	results_vec = &results;
 	const unsigned int pairs = std::thread::hardware_concurrency() / 2;
-	dirs.push_back(dir_input);
+	dirs.push(dir_input);
 	std::vector <std::thread> threadpool;
 	
-	for (unsigned int i = 0; i < pairs; i++) {
-		consumers.add_thread(i);
+	for (unsigned int i = 0; i < 3; i++) {
+		producers.add_thread(i);
 		threadpool.push_back(std::thread(&search::search_producer, this, i, exclude_windir));
 	}
 	
-	for (unsigned int i = 0; i < pairs; i++) {
-		producers.add_thread(i);
+	for (unsigned int i = 0; i < 1; i++) {
+		consumers.add_thread(i);
 		threadpool.push_back(std::thread(&search::search_consumer, this, i, mode_in, search_string));
 	}
 

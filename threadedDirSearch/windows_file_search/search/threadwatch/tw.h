@@ -1,6 +1,6 @@
 #pragma once
 #include "../../required.h"
-#include "../../spinlock/spinlock.h"
+#include "../spinlock/spinlock.h"
 
 class threadwatch {
 public:
